@@ -1,8 +1,15 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\{
+    UserController,
+    ProjectController
+};
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::post('/login', [UserController::class, 'login']);
+Route::post('/register', [UserController::class, 'register']);
+Route::get('/projects', [ProjectController::class, 'index']);
+
+Route::group(['middleware' => ['auth:sanctum']], function(){
+    Route::post('/createProject', [ProjectController::class, 'store']);
+});
