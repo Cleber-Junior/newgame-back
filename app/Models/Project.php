@@ -31,7 +31,7 @@ class Project extends Model{
 
     public function feedback(){
         return [
-            'name.required' => 'O nome do projeto obrigatório',
+            'name.required' => 'O nome do projeto é obrigatório',
             'status.required' => 'O campo status é obrigatório',
             'id_creator.required' => 'O campo criador é obrigatório',
         ];

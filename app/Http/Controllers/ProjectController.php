@@ -19,7 +19,15 @@ class ProjectController extends Controller{
         if(!$project === null){
             return response()->json(['error' => 'Nenhum projeto encontrado'], 404);
         }
-        return response()->json(['data' => $project], 200);
+
+        $newData = $project->map(function($item){
+            if($item->image){
+                $item->image = Storage::disk('s3')->temporaryUrl($item->image, now()->addMinutes(5));
+            }
+            return $item;
+        });
+
+        return response()->json(['data' => $newData], 200);
     }
 
     public function show($id){
@@ -55,7 +63,14 @@ class ProjectController extends Controller{
             return response()->json(['error' => 'Nenhum projeto encontrado'], 404);
         }
 
-        return response()->json(['projects' => $data], 200);
+        $newData = $data->map(function($item){
+            if($item->image){
+                $item->image = Storage::disk('s3')->temporaryUrl($item->image, now()->addMinutes(5));
+            }
+            return $item;
+        });
+
+        return response()->json(['projects' => $newData], 200);
     }
 
     public function update(Request $request, $id){
@@ -90,6 +105,18 @@ class ProjectController extends Controller{
 
         $project->update($request->all());
         return response()->json(['msg' => 'Projeto atualizado com sucesso', 'project' => $project], 200);
+    }
+
+    public function finishProject(Request $request, $id){
+        $project = $this->project->find($id);
+        if(!$project){
+            return response()->json(['error' => 'Projeto não encontrado. Impossivel executar a finalização'], 404);
+        }
+
+        $project->start_date = Carbon::now();
+
+        $project->update($request->all());
+        return response()->json(['msg' => 'Projeto criado com sucesso', 'project' => $project], 201);
     }
 
     public function destroy($id){
