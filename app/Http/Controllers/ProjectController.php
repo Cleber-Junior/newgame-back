@@ -22,7 +22,7 @@ class ProjectController extends Controller{
 
         $newData = $project->map(function($item){
             if($item->image){
-                $item->image = Storage::disk('s3')->temporaryUrl($item->image, now()->addMinutes(5));
+                $item->image = Storage::disk('s3')->temporaryUrl($item->image, now()->addMinutes(10));
             }
             return $item;
         });
@@ -37,8 +37,8 @@ class ProjectController extends Controller{
         }
 
         if($project->image){
-            $url = Storage::disk('s3')->temporaryUrl($project->image, now()->addMinutes(5));
-            return response()->json(['msg' => 'Projeto encontrado', 'project' => $project, 'url' => $url], 200);
+            $url = Storage::disk('s3')->temporaryUrl($project->image, now());
+            return response()->json(['msg' => 'Projeto encontrado', 'project' => $project, 'image' => $url], 200);
 
         }
 
@@ -114,9 +114,24 @@ class ProjectController extends Controller{
         }
 
         $project->start_date = Carbon::now();
+        $project->status = true;
 
         $project->update($request->all());
         return response()->json(['msg' => 'Projeto criado com sucesso', 'project' => $project], 201);
+    }
+
+    public function generateLinkImage(Request $request, $id){
+        $project = $this->project->find($id);
+        $hash = $project->image;
+        if(!$project){
+            return response()->json(['error' => 'Projeto não encontrado. Impossivel gerar o link da imagem'], 404);
+        }
+        if(!$hash){
+            return response()->json(['error' => 'Projeto não possui imagem'], 404);
+        } else {
+            $url = Storage::disk('s3')->temporaryUrl($hash, now()->addMinutes(10));
+            return response()->json(['msg' => 'Imagem salva com sucesso', 'url' => $url], 200);
+        }
     }
 
     public function destroy($id){

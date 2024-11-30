@@ -24,4 +24,5 @@ Route::group(['middleware' => ['auth:sanctum']], function(){
     Route::apiResource('/rewards', RewardsController::class);
     Route::get('/rewards/project/{id}', [RewardsController::class, 'allByProject']);
     Route::post('/finishProject/{id}', [ProjectController::class, 'finishProject']);
+    Route::get('/project/image/{id}', [ProjectController::class, 'generateLinkImage']);
 });

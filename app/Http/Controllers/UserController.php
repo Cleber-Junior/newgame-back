@@ -29,7 +29,7 @@ class UserController extends Controller{
             }
 
             $token = $user->createToken($user->email)->plainTextToken;
-            return response()->json(['user' => $user, 'token' => $token], 200);
+            return response()->json(['user' => $user, 'token' => $token, 'msg' => "Login efetuado com sucesso" ], 200);
         } catch (Exception $e){
             return response()->json(['message' => $e->getMessage()], 401);
         }
