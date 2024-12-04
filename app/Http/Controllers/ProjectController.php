@@ -63,14 +63,16 @@ class ProjectController extends Controller{
             return response()->json(['error' => 'Nenhum projeto encontrado'], 404);
         }
 
-        $newData = $data->map(function($item){
+        $url = $data->map(function($item){
             if($item->image){
-                $item->image = Storage::disk('s3')->temporaryUrl($item->image, now()->addMinutes(5));
+                $item = Storage::disk('s3')->temporaryUrl($item->image, now()->addMinutes(5));
+            } else {
+                $item = null;
             }
             return $item;
         });
 
-        return response()->json(['projects' => $newData], 200);
+        return response()->json(['projects' => $data, 'url' => $url], 200);
     }
 
     public function update(Request $request, $id){
@@ -86,7 +88,6 @@ class ProjectController extends Controller{
                     $dinamicRules[$input] = $rule;
                 }
             }
-
             $request->validate($dinamicRules, $project->feedback());
         } else {
             $request->validate($project->rules(), $project->feedback());
@@ -113,14 +114,11 @@ class ProjectController extends Controller{
             return response()->json(['error' => 'Projeto não encontrado. Impossivel executar a finalização'], 404);
         }
 
-        $project->start_date = Carbon::now();
-        $project->status = true;
-
         $project->update($request->all());
         return response()->json(['msg' => 'Projeto criado com sucesso', 'project' => $project], 201);
     }
 
-    public function generateLinkImage(Request $request, $id){
+    public function generateLinkImage($id){
         $project = $this->project->find($id);
         $hash = $project->image;
         if(!$project){

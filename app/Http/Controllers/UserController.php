@@ -6,9 +6,9 @@ use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller{
-
 
     protected User $user;
 
@@ -29,6 +29,7 @@ class UserController extends Controller{
             }
 
             $token = $user->createToken($user->email)->plainTextToken;
+
             return response()->json(['user' => $user, 'token' => $token, 'msg' => "Login efetuado com sucesso" ], 200);
         } catch (Exception $e){
             return response()->json(['message' => $e->getMessage()], 401);
@@ -64,13 +65,9 @@ class UserController extends Controller{
                     $dynamicRules[$input] = $rules;
                 }
             }
-            $request->validate($dynamicRules, $user->feedback());
-        } else {
-            $request->validate($user->rules(), $user->feedback());
         }
-
         $user->update($request->all());
-        return response()->json(['msg' => 'Usuário atualizado com sucesso', 'data' => $user], 200);
+        return response()->json(['msg' => 'Usuário atualizado com sucesso', 'user' => $user], 200);
     }
 
     public function destroy($id){

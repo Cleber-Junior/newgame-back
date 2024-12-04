@@ -20,9 +20,13 @@ Route::group(['middleware' => ['auth:sanctum']], function(){
     Route::post('/createProject', [ProjectController::class, 'store']);
     Route::get('/projects/{id}', [ProjectController::class, 'show']);
     Route::patch('/updateProject/{id}', [ProjectController::class, 'update']);
-    Route::get('/user/projects/{id}', [ProjectController::class, 'allByUser']);
+    Route::get('/project/image/{id}', [ProjectController::class, 'generateLinkImage']);
+    Route::post('/finishProject/{id}', [ProjectController::class, 'finishProject']);
+
     Route::apiResource('/rewards', RewardsController::class);
     Route::get('/rewards/project/{id}', [RewardsController::class, 'allByProject']);
-    Route::post('/finishProject/{id}', [ProjectController::class, 'finishProject']);
-    Route::get('/project/image/{id}', [ProjectController::class, 'generateLinkImage']);
+
+    Route::post('/editUser/{id}', [UserController::class, 'update']);
+    Route::get('/user/projects/{id}', [ProjectController::class, 'allByUser']);
+    Route::get('/user/image/{id}', [UserController::class, 'generateLinkImage']);
 });
