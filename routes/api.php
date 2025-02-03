@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\{
+    PaymentController,
     UserController,
     ProjectController,
     RewardsController,
@@ -15,6 +16,9 @@ Route::post('/login', [UserController::class, 'login']);
 Route::post('/register', [UserController::class, 'register']);
 Route::get('/projects', [ProjectController::class, 'index']);
 Route::get('/users', [UserController::class, 'index']);
+Route::get('/project/{id}', [ProjectController::class, 'findById']);
+// Route::post('/payReward', [PaymentController::class, 'createReference']);
+// Route::get('/getPayment', [PaymentController::class, 'getReference']);
 
 Route::group(['middleware' => ['auth:sanctum']], function(){
     Route::post('/createProject', [ProjectController::class, 'store']);
@@ -29,4 +33,5 @@ Route::group(['middleware' => ['auth:sanctum']], function(){
     Route::post('/editUser/{id}', [UserController::class, 'update']);
     Route::get('/user/projects/{id}', [ProjectController::class, 'allByUser']);
     Route::get('/user/image/{id}', [UserController::class, 'generateLinkImage']);
+
 });
