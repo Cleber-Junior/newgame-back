@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
+use App\Models\Rewards;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 class ProjectController extends Controller{
 
     protected Project $project;
+
     public function __construct(Project $project){
         $this->project = $project;
     }
@@ -73,6 +75,20 @@ class ProjectController extends Controller{
         });
 
         return response()->json(['projects' => $data, 'url' => $url], 200);
+    }
+
+    public function findById($id){
+        $project = $this->project->where('id', $id)->get();
+        $newData = $project;
+
+        if($newData[0]->image){
+            $newData[0]->image = Storage::disk('s3')->temporaryUrl($newData[0]->image, now()->addMinutes(5));
+        }
+
+        $projectRewards = Rewards::where('id_project', $newData[0]->id)->get();
+
+        return response()->json(['project' => $newData, 'rewards' => $projectRewards], 200);
+
     }
 
     public function update(Request $request, $id){
