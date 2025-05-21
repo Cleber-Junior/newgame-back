@@ -49,6 +49,7 @@ class UserController extends Controller{
         if(!$user){
             return response()->json(['error' => 'Usuário não encontrado'], 404);
         }
+
         return response()->json(['msg' => 'Usuário encontrado', 'data' => $user], 200);
     }
 
@@ -66,6 +67,26 @@ class UserController extends Controller{
                 }
             }
         }
+
+        if ($request->has('cpf')) {
+            $cpf = preg_replace('/[^0-9]/', '', $request->cpf);
+
+            if (strlen($cpf) !== 11 || preg_match('/(\d)\1{10}/', $cpf)) {
+                return response()->json(['message' => 'Insira um CPF valido'], 400);
+            }
+
+            for ($t = 9; $t < 11; $t++) {
+                $d = 0;
+                for ($c = 0; $c < $t; $c++) {
+                    $d += $cpf[$c] * (($t + 1) - $c);
+                }
+                $d = ((10 * $d) % 11) % 10;
+                if ($cpf[$c] != $d) {
+                    return response()->json(['error' => 'CPF inválido'], 400);
+                }
+            }
+        }
+
         $user->update($request->all());
         return response()->json(['msg' => 'Usuário atualizado com sucesso', 'user' => $user], 200);
     }

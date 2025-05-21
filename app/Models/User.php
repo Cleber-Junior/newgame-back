@@ -19,7 +19,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'fullname',
         'username',
         'email',
         'about',
@@ -34,11 +34,11 @@ class User extends Authenticatable
         'number',
         'zip_code',
         'cpf',
+        'birth_date',
     ];
 
     public function rules(){
         return [
-            'name' => 'required',
             'username' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:8',
@@ -47,7 +47,6 @@ class User extends Authenticatable
 
     public function feedback(){
         return [
-            'name.required' => 'O campo nome é obrigatório',
             'username.required' => 'O campo usuário é obrigatório',
             'email.required' => 'O campo email é obrigatório',
             'email.email' => 'O campo email deve ser um email válido',

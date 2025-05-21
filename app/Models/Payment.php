@@ -12,6 +12,10 @@ class Payment extends Model{
     protected $fillable = [
         'id_user',
         'id_project',
+        'date',
+        'id_reward',
+        'id_preference',
+        'status',
         'value',
     ];
 
