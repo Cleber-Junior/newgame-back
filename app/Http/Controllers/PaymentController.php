@@ -27,6 +27,15 @@ class PaymentController extends Controller {
 
         $reward = Rewards::find($request->reward_id);
 
+        $localPayment = $this->payment->create([
+            'value' => $reward['value'],
+            'id_project' => $project['id'],
+            'id_user' => $user['id'],
+            'id_reward' => $reward['id'],
+            'status' => 2,
+            'date' => now(),
+        ]);
+
         $client = new Client();
 
         $requestBody = [
@@ -39,6 +48,7 @@ class PaymentController extends Controller {
                   "unit_price" => (float) $reward["value"],
                 ]
             ],
+            "external_reference" => "payment_" . $localPayment->id,
                 "payer" => [
                   "name" => $user["fullname"],
                   "email" => $user["email"],
@@ -76,28 +86,23 @@ class PaymentController extends Controller {
                   "pending" => "http://localhost:5173/user/supported",
                   "failure" => "http://localhost:5173/user/supported"
                 ],
+                "notification_url" => "https://newgame-da3be6e96e82.herokuapp.com/api/webhook/mercadopago",
         ];
 
         $request = new HTTPRequest('POST', 'https://api.mercadopago.com/checkout/preferences', [
-            'Authorization' => 'Bearer ' . 'TEST-3396332215883252-121913-8796d6699c0d962cb04bd06004e69bb3-1919598852',
+            'Authorization' => 'Bearer ' . env('MERCADOPAGO_ACCESS_TOKEN'),
             'Content-Type' => 'application/json'
         ], json_encode($requestBody));
 
         $res = $client->sendAsync($request)->wait();
         $responseBody = json_decode($res->getBody(), true);
+
+        $preferenceId = $responseBody['id'];
+
+        $localPayment->id_preference = $preferenceId;
+        $localPayment->save();
+
         $linkToPay = $responseBody['sandbox_init_point'];
-
-        $paymentData = [
-            'id_preference' => $responseBody['id'],
-            'value' => $responseBody['items'][0]['unit_price'],
-            'date' => now(),
-            'id_project' => $project['id'],
-            'id_user' => $user['id'],
-            'id_reward' => $reward['id'],
-            'status' => 2,
-        ];
-
-        $this->storePayment($paymentData);
 
         return response()->json(['msg' => 'Referência criada com sucesso', 'reference' => $linkToPay], 201);
     }

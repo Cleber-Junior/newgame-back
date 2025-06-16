@@ -17,7 +17,7 @@ return new class extends Migration
             $table->dateTime('date');
             $table->foreignId('id_project')->constrained('projects');
             $table->foreignId('id_user')->constrained('users');
-            $table->string('id_preference');
+            $table->string('id_preference')->nullable();
             $table->foreignId('id_reward')->constrained('rewards');
             $table->boolean('status');
             $table->timestamps();
