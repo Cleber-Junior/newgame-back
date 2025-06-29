@@ -82,9 +82,9 @@ class PaymentController extends Controller {
                     "installments" => 6,
                 ],
                 "back_urls" => [
-                  "success" => "http://localhost:5173/user/supported",
-                  "pending" => "http://localhost:5173/user/supported",
-                  "failure" => "http://localhost:5173/user/supported"
+                  "success" => "https://www.new-game.shop/user/supported",
+                  "pending" => "https://www.new-game.shop/user/supported",
+                  "failure" => "https://www.new-game.shop/user/supported"
                 ],
                 "notification_url" => "https://newgame-da3be6e96e82.herokuapp.com/api/webhook/mercadopago",
         ];
