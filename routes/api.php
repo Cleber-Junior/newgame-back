@@ -27,7 +27,7 @@ Route::group(['middleware' => ['auth:sanctum']], function(){
 
     Route::apiResource('/rewards', RewardsController::class);
     Route::get('/rewards/project/{id}', [RewardsController::class, 'allByProject']);
-
+    Route::post('/rewards/{id}', [RewardsController::class, 'update']);
 
     Route::post('/editUser/{id}', [UserController::class, 'update']);
     Route::get('/user/projects/{id}', [ProjectController::class, 'allByUser']);
